@@ -16,10 +16,9 @@ public class GameGraph {
                 graph.computeIfAbsent(currNode, k -> new ArrayList<>()).add(nextNode);
             }
         }
-
     }
 
-    public void analysis(Map<GameState, List<GameState>> graph, GameState start){
+    public void analysis(GameState start){
         Queue<GameState> perimeter = new ArrayDeque<>();
         Set<GameState> visited = new HashSet<>();
 
@@ -28,7 +27,7 @@ public class GameGraph {
 
         while(!perimeter.isEmpty()){
             GameState currState = perimeter.remove();
-            
+
             for(GameState nextState : graph.get(currState)){
                 if(!visited.contains(nextState)){
                     perimeter.add(nextState);

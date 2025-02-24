@@ -4,6 +4,7 @@ import java.util.*;
 public class GameState {
     public int[] currentPlayer;
     public int[] opponentPlayer;
+    
     public GameState(int[] currentPlayer, int[] opponentPlayer) {
         this.currentPlayer = Arrays.copyOf(currentPlayer, currentPlayer.length);
         this.opponentPlayer = Arrays.copyOf(opponentPlayer, opponentPlayer.length);
