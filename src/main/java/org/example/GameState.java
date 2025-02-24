@@ -9,8 +9,7 @@ public class GameState {
         this.opponentPlayer = Arrays.copyOf(opponentPlayer, opponentPlayer.length);
     }
 
-    private boolean checkLose()
-    {
+    private boolean checkLose(){
         //TODO
         return false;
     }

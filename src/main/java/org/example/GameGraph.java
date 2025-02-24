@@ -19,8 +19,24 @@ public class GameGraph {
 
     }
 
-    public void analysis(){
-        //TODO : run graph search algorithm here
+    public void analysis(Map<GameState, List<GameState>> graph, GameState start){
+        Queue<GameState> perimeter = new ArrayDeque<>();
+        Set<GameState> visited = new HashSet<>();
+
+        perimeter.add(start);
+        visited.add(start);
+
+        while(!perimeter.isEmpty()){
+            GameState currState = perimeter.remove();
+            
+            for(GameState nextState : graph.get(currState)){
+                if(!visited.contains(nextState)){
+                    perimeter.add(nextState);
+                    visited.add(nextState);
+                }
+            }
+        
+        }
     }
 
     public void report(){
