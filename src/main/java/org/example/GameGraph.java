@@ -37,8 +37,37 @@ public class GameGraph {
 
     }
 
-    public void analysis(){
-        //TODO : run graph search algorithm here
+    public Map<GameState, GameState> analysis(){
+        Map<GameState, GameState> prev = new HashMap<>();
+        Queue<GameState> perimeter = new LinkedList<>();
+        Set<GameState> visited = new HashSet<>();
+
+        Map<GameState, List<GameState>> reversedGraph = new HashMap<>();
+        for (GameState from : graph.keySet()) {
+            for (GameState to : graph.get(from)) {
+                reversedGraph.computeIfAbsent(to, k -> new ArrayList<>()).add(from); // 방향 반대로 추가
+            }
+        }
+
+        GameState start = endState;
+        perimeter.add(start);
+        visited.add(start);
+        prev.put(start, null);
+
+        while(!perimeter.isEmpty()){
+            GameState currState = perimeter.poll();
+
+            for (GameState nextState : reversedGraph.getOrDefault(currState, Collections.emptyList())){
+                if(!visited.contains(nextState)){
+                    perimeter.add(nextState);
+                    prev.put(nextState, currState);
+                    visited.add(nextState);
+                }
+            }
+
+        }
+
+        return prev;
     }
 
     public void report(){
