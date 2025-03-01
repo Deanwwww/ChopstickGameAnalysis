@@ -15,7 +15,7 @@ public class Main {
             int b = scanner.nextInt();
             int c = scanner.nextInt();
             int d = scanner.nextInt();
-            GameState state = new GameState(new int[]{a,b}, new int[]{c,d});
+            GameState state = new GameState(new int[]{a,b}, new int[]{c,d},true);
 
             //get shortest path from 'prev'
             List<GameState> path = new LinkedList<>();

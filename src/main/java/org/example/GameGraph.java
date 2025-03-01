@@ -4,8 +4,8 @@ import java.util.*;
 public class GameGraph {
     private Set<GameState> nodes;
     private Map<GameState, List<GameState>> graph;
-    private GameState startState = new GameState(new int[]{1,1}, new int[]{1,1});
-    private GameState endState = new  GameState(new int[]{-1,-1}, new int[]{-1,-1});
+    private GameState winState = new GameState(new int[]{-1,-1}, new int[]{-1,-1},true);
+    private GameState loseState = new GameState(new int[]{-1,-1}, new int[]{-1,-1},false);
 
     public GameGraph() {
         nodes = new HashSet<>();
@@ -16,8 +16,10 @@ public class GameGraph {
             for (int j=0; j<5; j++)
                 for(int k=0; k<5; k++)
                     for(int l=0; l<5; l++) {
-                        GameState newNode = new GameState(new int[]{i, j}, new int[]{k, l});
-                        nodes.add(newNode);
+                        GameState newNode1 = new GameState(new int[]{i, j}, new int[]{k, l},true);
+                        GameState newNode2 = new GameState(new int[]{i, j}, new int[]{k, l},false);
+                        nodes.add(newNode1);
+                        nodes.add(newNode2);
                     }
 
         // ADD every Edges (Action)
@@ -29,8 +31,10 @@ public class GameGraph {
 
         // ADD end Edges
         for(GameState currNode : nodes) {
-            if(currNode.currentPlayer[0]==0 &&  currNode.currentPlayer[1]==0) {
-                graph.computeIfAbsent(currNode, k -> new ArrayList<>()).add(endState);
+            if(currNode.checkWin()==1) {
+                graph.computeIfAbsent(currNode, k -> new ArrayList<>()).add(winState);
+            } else if(currNode.checkWin()==-1) {
+                graph.computeIfAbsent(currNode, k -> new ArrayList<>()).add(loseState);
             }
         }
 
@@ -49,7 +53,7 @@ public class GameGraph {
             }
         }
 
-        GameState start = endState;
+        GameState start = winState;
         perimeter.add(start);
         visited.add(start);
         prev.put(start, null);
