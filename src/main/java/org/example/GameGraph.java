@@ -41,7 +41,7 @@ public class GameGraph {
 
     }
 
-    public Map<GameState, GameState> analysis(){
+    public Map<GameState, GameState> BFS(){
         Map<GameState, GameState> prev = new HashMap<>();
         Queue<GameState> perimeter = new LinkedList<>();
         Set<GameState> visited = new HashSet<>();
@@ -73,6 +73,49 @@ public class GameGraph {
 
         return prev;
     }
+
+    public List<List<GameState>> DFS(GameState start) {
+        Map<GameState, List<List<GameState>>> memo = new HashMap<>();
+        Set<GameState> visited = new HashSet<>();
+        return DFS_recursive(start, visited, memo);
+    }
+
+    private List<List<GameState>> DFS_recursive(GameState current, Set<GameState> visited,
+                                      Map<GameState, List<List<GameState>>> memo) {
+        if (memo.containsKey(current)) {
+            return memo.get(current);
+        }
+
+        List<List<GameState>> paths = new ArrayList<>();
+
+        if (current.equals(winState)) {
+            List<GameState> path = new ArrayList<>();
+            path.add(current);
+            paths.add(path);
+            memo.put(current, paths);
+            return paths;
+        }
+
+        visited.add(current);
+        if (graph.containsKey(current)) {
+            for (GameState next : graph.get(current)) {
+                if (!visited.contains(next)) {
+                    List<List<GameState>> subPaths = DFS_recursive(next, visited, memo);
+                    for (List<GameState> subPath : subPaths) {
+                        List<GameState> newPath = new ArrayList<>();
+                        newPath.add(current);
+                        newPath.addAll(subPath);
+                        paths.add(newPath);
+                    }
+                }
+            }
+        }
+
+        visited.remove(current);
+        memo.put(current, paths);
+        return paths;
+    }
+
 
     public void report(){
         System.out.println("< TOTAL GRAPH >");
