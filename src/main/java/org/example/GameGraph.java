@@ -1,5 +1,8 @@
 package org.example;
 import java.util.*;
+import org.graphstream.graph.*;
+import org.graphstream.graph.implementations.*;
+import org.graphstream.ui.view.Viewer;
 
 public class GameGraph {
     private Set<GameState> nodes;
@@ -124,5 +127,31 @@ public class GameGraph {
             System.out.print(" -> ");
             System.out.println(graph.get(currNode));
         }
+
+        //Graph Stream
+        System.setProperty("org.graphstream.ui", "swing");
+        Graph gs_graph = new SingleGraph("Directed Graph");
+        gs_graph.setAttribute("ui.stylesheet",
+                "node { fill-color: black; size: 10px; text-size: 9; }" +
+                        "edge { shape: cubic-curve; arrow-size: 5px, 4px; }");
+        gs_graph.setAttribute("ui.antialias");
+
+        for (GameState node : nodes) {
+            gs_graph.addNode(node.toString());
+        }
+        gs_graph.addNode(winState.toString());
+        gs_graph.addNode(loseState.toString());
+
+        for (GameState node : nodes) {
+            for(GameState nextNode : graph.get(node)){
+                gs_graph.addEdge(node.toString()+" -> "+nextNode.toString(),
+                        node.toString(),nextNode.toString(),true);
+            }
+        }
+
+        for (Node node : gs_graph) {
+            node.setAttribute("ui.label", node.getId());
+        }
+        Viewer viewer = gs_graph.display();
     }
 }

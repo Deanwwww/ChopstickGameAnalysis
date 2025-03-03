@@ -17,6 +17,8 @@ public class Main {
             int d = scanner.nextInt();
             GameState state = new GameState(new int[]{a,b}, new int[]{c,d},true);
 
+            // OutOfMemory
+            /*
             List<List<GameState>> allPath = game.DFS(state);
 
             System.out.println("all path : ");
@@ -28,6 +30,7 @@ public class Main {
                 System.out.print("\n");
             }
             System.out.println("path number : " + allPath.size());
+            */
 
             //get shortest path from 'prev'
             List<GameState> path = new LinkedList<>();
