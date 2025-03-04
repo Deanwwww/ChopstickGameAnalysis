@@ -8,6 +8,9 @@ public class Main {
         Map<GameState, GameState> shortestPath = game.BFS();
         game.report();
 
+        int cnt = game.countComponents();
+        System.out.println("\nconnected nodes =  " + cnt);
+
         Scanner scanner = new Scanner(System.in);
         while(true) {
             System.out.println("\ninput state [Ex : 1 1 1 1 ] ");
@@ -16,7 +19,6 @@ public class Main {
             int c = scanner.nextInt();
             int d = scanner.nextInt();
             GameState state = new GameState(new int[]{a,b}, new int[]{c,d},true);
-
             // OutOfMemory
             /*
             List<List<GameState>> allPath = game.DFS(state);

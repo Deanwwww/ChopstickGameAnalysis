@@ -1,5 +1,8 @@
 package org.example;
+import java.awt.*;
 import java.util.*;
+import java.util.List;
+
 import org.graphstream.graph.*;
 import org.graphstream.graph.implementations.*;
 import org.graphstream.ui.view.Viewer;
@@ -9,6 +12,8 @@ public class GameGraph {
     private Map<GameState, List<GameState>> graph;
     private GameState winState = new GameState(new int[]{-1,-1}, new int[]{-1,-1},true);
     private GameState loseState = new GameState(new int[]{-1,-1}, new int[]{-1,-1},false);
+    private GameState startState1 = new GameState(new int[]{1,1}, new int[]{1,1},true);
+    private GameState startState2 = new GameState(new int[]{1,1}, new int[]{1,1},false);
 
     public GameGraph() {
         nodes = new HashSet<>();
@@ -119,6 +124,33 @@ public class GameGraph {
         return paths;
     }
 
+    public int countComponents(){
+        int cnt=0;
+        Set<GameState> visited = new HashSet<>();
+        Stack<GameState> stack = new Stack<>();
+        stack.push(startState1);
+        visited.add(startState1);
+        cnt++;
+
+        while(!stack.isEmpty()) {
+            cnt++;
+            GameState currState = stack.pop();
+            for (GameState nextstate : currState.possibleActions()) {
+                if (!visited.contains(nextstate)) {
+                    stack.push(nextstate);
+                    visited.add(nextstate);
+                }
+            }
+        }
+
+        for(GameState node:nodes){
+            if(!visited.contains(node)){
+                //print not-connected nodes from start node
+                //System.out.println(node);
+            }
+        }
+        return cnt;
+    }
 
     public void report(){
         System.out.println("< TOTAL GRAPH >");
@@ -132,7 +164,7 @@ public class GameGraph {
         System.setProperty("org.graphstream.ui", "swing");
         Graph gs_graph = new SingleGraph("Directed Graph");
         gs_graph.setAttribute("ui.stylesheet",
-                "node { fill-color: black; size: 10px; text-size: 9; }" +
+                "node { fill-color: blue; size: 10px; text-size: 9;}" +
                         "edge { shape: cubic-curve; arrow-size: 5px, 4px; }");
         gs_graph.setAttribute("ui.antialias");
 
@@ -150,8 +182,51 @@ public class GameGraph {
         }
 
         for (Node node : gs_graph) {
-            node.setAttribute("ui.label", node.getId());
+            String id = node.getId();
+            node.setAttribute("ui.label", id);
+            if(Objects.equals(id, winState.toString())){
+                node.setAttribute("ui.style", "fill-color: rgb(255,0,0);");
+                node.setAttribute("xyz",15,35,0);
+            }
+            else if(Objects.equals(id, loseState.toString())){
+                node.setAttribute("ui.style", "fill-color: rgb(255,0,0);");
+                node.setAttribute("xyz",50,35,0);
+            }
+            else {
+                GameState st = parsing(id);
+                int x = 6*st.currentPlayer[0]+st.currentPlayer[1];
+                int y = 6*st.opponentPlayer[0]+st.opponentPlayer[1];
+                if(!st.myTurn){
+                    x+=36;
+                }
+                node.setAttribute("xyz",x,y,0);
+            }
+            if(Objects.equals(id, startState1.toString()) || Objects.equals(id, startState2.toString())){
+                node.setAttribute("ui.style", "fill-color: rgb(255,0,0);");
+            }
+            node.setAttribute("layout.frozen", true);
         }
         Viewer viewer = gs_graph.display();
+    }
+
+    private GameState parsing(String input){
+        GameState res;
+        String str = input.substring(1,16);
+        System.out.println(str);
+        if(str.charAt(0)=='('){
+            int a = Integer.parseInt(str.substring(1,2));
+            int b = Integer.parseInt(str.substring(5,6));
+            int c = Integer.parseInt(str.substring(10,11));
+            int d = Integer.parseInt(str.substring(14,15));
+            res = new GameState(new int[]{a,b}, new int[]{c,d},true);
+        }
+        else {
+            int a = Integer.parseInt(str.substring(0,1));
+            int b = Integer.parseInt(str.substring(4,5));
+            int c = Integer.parseInt(str.substring(9,10));
+            int d = Integer.parseInt(str.substring(13,14));
+            res = new GameState(new int[]{c,d}, new int[]{a,b},false);
+        }
+        return res;
     }
 }
