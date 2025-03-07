@@ -15,6 +15,7 @@ public class GameGraph {
     private GameState startState1 = new GameState(new int[]{1,1}, new int[]{1,1},true);
     private GameState startState2 = new GameState(new int[]{1,1}, new int[]{1,1},false);
 
+    // Creates all of the possible states and all of the edges
     public GameGraph() {
         nodes = new HashSet<>();
         graph = new HashMap<>();
@@ -45,10 +46,9 @@ public class GameGraph {
                 graph.computeIfAbsent(currNode, k -> new ArrayList<>()).add(loseState);
             }
         }
-
-
     }
 
+    // Traverse through all of the nodes and returns them in reverse.
     public Map<GameState, GameState> BFS(){
         Map<GameState, GameState> prev = new HashMap<>();
         Queue<GameState> perimeter = new LinkedList<>();
@@ -82,6 +82,7 @@ public class GameGraph {
         return prev;
     }
 
+    // Finding every path but too long
     public List<List<GameState>> DFS(GameState start) {
         Map<GameState, List<List<GameState>>> memo = new HashMap<>();
         Set<GameState> visited = new HashSet<>();
@@ -124,6 +125,7 @@ public class GameGraph {
         return paths;
     }
 
+    
     public int countComponents(){
         int cnt=0;
         Set<GameState> visited = new HashSet<>();
