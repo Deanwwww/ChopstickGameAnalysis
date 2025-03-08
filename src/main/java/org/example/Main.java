@@ -11,12 +11,41 @@ public class Main {
         /*
          * Prints out all of the probability results for each State
          */
+        int count0_5 = 0;
+        int loose = 0;
+        int win = 0;
+        double avg = 0.0;
+        int count = 0;
+        int highProbWin = 0;
         for (Map.Entry<GameState, Double> entry : probabilities.entrySet()) {
             GameState state = entry.getKey();  // The state
             Double prob = entry.getValue();    // The probability
-
+            if(prob == 0.5){
+                count0_5++;
+            }
+            if(prob == 0.0){
+                loose++;
+            }
+            if(prob == 1.0){
+                win++;
+            }
+            if(prob >= 0.7){
+                highProbWin++;
+            }
+            avg += prob;
+            count++;
             System.out.println("State: " + state + " -> Probability: " + prob);
         }
+        avg /= count;
+        System.out.println(" loose: " + loose);
+        System.out.println(" win: " + win);
+        System.out.println(" 0.5: " + count0_5);
+        System.out.println(" avg: " + avg);
+        System.out.println("high prob win: " + highProbWin);
+        double winPercentage = (double)win / count;
+        System.out.println("Win Percentage: " + winPercentage);
+        System.out.println("loose Percentage: " + ((double)loose / count));
+        System.out.println("tie Percentage: " + ((double)count0_5 / count));
         //game.report();
 
         int cnt = game.countComponents();
