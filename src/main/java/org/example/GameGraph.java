@@ -14,6 +14,7 @@ public class GameGraph {
     private GameState loseState = new GameState(new int[]{-1,-1}, new int[]{-1,-1},false);
     private GameState startState1 = new GameState(new int[]{1,1}, new int[]{1,1},true);
     private GameState startState2 = new GameState(new int[]{1,1}, new int[]{1,1},false);
+    private Map<GameState, Integer> ultDP = new HashMap<>();
 
     public GameGraph() {
         nodes = new HashSet<>();
@@ -185,11 +186,11 @@ public class GameGraph {
             String id = node.getId();
             node.setAttribute("ui.label", id);
             if(Objects.equals(id, winState.toString())){
-                node.setAttribute("ui.style", "fill-color: rgb(255,0,0);");
+                node.setAttribute("ui.style", "fill-color: rgb(0,0,255);");
                 node.setAttribute("xyz",15,35,0);
             }
             else if(Objects.equals(id, loseState.toString())){
-                node.setAttribute("ui.style", "fill-color: rgb(255,0,0);");
+                node.setAttribute("ui.style", "fill-color: rgb(0,0,0);");
                 node.setAttribute("xyz",50,35,0);
             }
             else {
@@ -200,6 +201,9 @@ public class GameGraph {
                     x+=36;
                 }
                 node.setAttribute("xyz",x,y,0);
+                if(isUlt(st)){
+                    node.setAttribute("ui.style", "fill-color: rgb(255,165,0);");
+                }
             }
             if(Objects.equals(id, startState1.toString()) || Objects.equals(id, startState2.toString())){
                 node.setAttribute("ui.style", "fill-color: rgb(255,0,0);");
@@ -211,8 +215,9 @@ public class GameGraph {
 
     private GameState parsing(String input){
         GameState res;
+        if(input.equals("[ I Win! ]")) return this.winState;
+        if(input.equals("[ I Lose! ]")) return this.loseState;
         String str = input.substring(1,16);
-        System.out.println(str);
         if(str.charAt(0)=='('){
             int a = Integer.parseInt(str.substring(1,2));
             int b = Integer.parseInt(str.substring(5,6));
@@ -228,5 +233,36 @@ public class GameGraph {
             res = new GameState(new int[]{c,d}, new int[]{a,b},false);
         }
         return res;
+    }
+
+    public boolean isUlt(GameState currState){
+        if(!currState.myTurn) {
+            System.out.println("this is not my turn");
+            ultDP.put(currState,-1);
+            return false;
+        }
+        if(currState.checkWin()==1) {
+            ultDP.put(currState,1);
+            return true;
+        }
+        if(ultDP.containsKey(currState)){
+            return ultDP.get(currState)==1;
+        }
+        ultDP.put(currState,0);
+        for(GameState nextState:currState.possibleActions()){
+            boolean res = true;
+            for(GameState nextNextState:nextState.possibleActions()){
+                if(!isUlt(nextNextState)){
+                    res = false;
+                    break;
+                }
+            }
+            if (res) {
+                ultDP.put(currState,1);
+                return true;
+            }
+        }
+        ultDP.put(currState,-1);
+        return false;
     }
 }
