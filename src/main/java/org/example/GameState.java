@@ -29,6 +29,7 @@ public class GameState {
         }
     }
 
+    // returns all the possible actions at each state
     public List<GameState> possibleActions(){
         List<GameState> actions = new ArrayList<>();
         // attack
