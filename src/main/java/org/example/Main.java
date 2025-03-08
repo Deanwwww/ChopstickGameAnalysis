@@ -37,17 +37,18 @@ public class Main {
             System.out.println("State: " + state + " -> Probability: " + prob);
         }
         avg /= count;
-        System.out.println(" loose: " + loose);
-        System.out.println(" win: " + win);
-        System.out.println(" 0.5: " + count0_5);
-        System.out.println(" avg win percentage: " + avg);
-        System.out.println("high prob win states more than 70%: " + highProbWin);
+        System.out.println("No. Loose States: " + loose);
+        System.out.println("No. Win States: " + win);
+        System.out.println("No. Infinite Cycles: " + count0_5);
+        System.out.println("Avg win percentage: " + (int)(avg * 100) + "%");
+        System.out.println("Number of High Prob win states more than 70%: " + highProbWin );
         double winPercentage = (double)win / count;
-        System.out.println("Win Percentage: " + winPercentage);
-        System.out.println("loose Percentage: " + ((double)loose / count));
-        System.out.println("tie Percentage: " + ((double)count0_5 / count));
+        System.out.println("Win Probability: " + (int)(winPercentage * 100) + "%");
+        System.out.println("Loose Probability: " + (int)(((double)loose / count)*100) + "%");
+        System.out.println("Infinite Game Probability: " + (int)(((double)count0_5 / count)*100) + "%");
+        System.out.println("Ratio of no. high prob / total States: " + (int)(((double)highProbWin / count) * 100) + "%");
         System.out.println("total States: " + count);
-        game.report();
+        //game.report();
 
         int cnt = game.countComponents();
         System.out.println("\nconnected nodes =  " + cnt);
