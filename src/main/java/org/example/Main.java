@@ -48,7 +48,7 @@ public class Main {
         System.out.println("Infinite Game Probability: " + (int)(((double)count0_5 / count)*100) + "%");
         System.out.println("Ratio of no. high prob / total States: " + (int)(((double)highProbWin / count) * 100) + "%");
         System.out.println("total States: " + count);
-        //game.report();
+        game.report();
 
         int cnt = game.countComponents();
         System.out.println("\nconnected nodes =  " + cnt);

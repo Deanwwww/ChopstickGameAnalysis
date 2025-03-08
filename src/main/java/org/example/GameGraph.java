@@ -266,6 +266,19 @@ public class GameGraph {
         return res;
     }
 
+    /**
+     * Determines whether the current state can be forced into a winning outcome for the current player.
+     * 
+     * - If it's not the current player's turn, mark the DP as -1 (losing/no guarantee) and return false immediately.
+     * - If the current state is already a winning state, store 1 in the DP and return true.
+     * - If we've seen this state, return the seen result.
+     * - Otherwise, explore each possible "nextState". For each nextState, look at its possible next-next-states.
+     *   If in every next-next-state, the current player can still force a win (isUlt is true), then we can mark the
+     *   current state as 1 (winning) and return true.
+     * - If we exhaust all nextStates without finding a guaranteed winning path, we store -1 (not winning) and return false.
+     * 
+     * This method uses a depth-first style search combined with memoization (ultDP) to avoid recomputing states.
+     */
     public boolean isUlt(GameState currState){
         if(!currState.myTurn) {
             //System.out.println("this is not my turn");
