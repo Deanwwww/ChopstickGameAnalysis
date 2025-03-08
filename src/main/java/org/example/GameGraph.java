@@ -190,7 +190,7 @@ public class GameGraph {
         System.setProperty("org.graphstream.ui", "swing");
         Graph gs_graph = new SingleGraph("Directed Graph");
         gs_graph.setAttribute("ui.stylesheet",
-                "node { fill-color: blue; size: 10px; text-size: 9;}" +
+                "node { fill-color: grey; size: 10px; text-size: 9;}" +
                         "edge { shape: cubic-curve; arrow-size: 5px, 4px; }");
         gs_graph.setAttribute("ui.antialias");
 
@@ -226,11 +226,17 @@ public class GameGraph {
                     x+=36;
                 }
                 node.setAttribute("xyz",x,y,0);
+                if(probabilityMemo.get(st)>=0.7){
+                    node.setAttribute("ui.style", "fill-color: rgb(0,255,0);");
+                }
                 if(isUlt(st)){
                     node.setAttribute("ui.style", "fill-color: rgb(255,165,0);");
                 }
             }
-            if(Objects.equals(id, startState1.toString()) || Objects.equals(id, startState2.toString())){
+            if(Objects.equals(id, startState1.toString())){
+                node.setAttribute("ui.style", "fill-color: rgb(6,64,43);");
+            }
+            else if(Objects.equals(id, startState2.toString())){
                 node.setAttribute("ui.style", "fill-color: rgb(255,0,0);");
             }
             node.setAttribute("layout.frozen", true);
@@ -262,7 +268,7 @@ public class GameGraph {
 
     public boolean isUlt(GameState currState){
         if(!currState.myTurn) {
-            System.out.println("this is not my turn");
+            //System.out.println("this is not my turn");
             ultDP.put(currState,-1);
             return false;
         }
