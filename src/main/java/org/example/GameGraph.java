@@ -2,6 +2,7 @@ package org.example;
 import java.awt.*;
 import java.util.*;
 import java.util.List;
+import java.util.Queue;
 
 import org.graphstream.graph.*;
 import org.graphstream.graph.implementations.*;
@@ -12,9 +13,12 @@ public class GameGraph {
     private Map<GameState, List<GameState>> graph;
     private GameState winState = new GameState(new int[]{-1,-1}, new int[]{-1,-1},true);
     private GameState loseState = new GameState(new int[]{-1,-1}, new int[]{-1,-1},false);
-    private GameState startState1 = new GameState(new int[]{1,1}, new int[]{1,1},true);
-    private GameState startState2 = new GameState(new int[]{1,1}, new int[]{1,1},false);
+    private GameState startState1 = new GameState(new int[]{1,1}, new int[]{1,1},true); // Us Start
+    private GameState startState2 = new GameState(new int[]{1,1}, new int[]{1,1},false); // Opp Start
     private Map<GameState, Integer> ultDP = new HashMap<>();
+    private  Map<GameState, Double> probabilityMemo = new HashMap<>();
+    private  Set<GameState> visiting = new HashSet<>();
+    
 
     // Creates all of the possible states and all of the edges
     public GameGraph() {
@@ -34,7 +38,7 @@ public class GameGraph {
 
         // ADD every Edges (Action)
         for(GameState currNode : nodes) {
-            for (GameState nextNode : currNode.possibleActions()){
+            for (GameState nextNode : currNode.possibleActions(probabilityMemo, visiting)){
                 graph.computeIfAbsent(currNode, k -> new ArrayList<>()).add(nextNode);
             }
         }
@@ -81,6 +85,25 @@ public class GameGraph {
         }
 
         return prev;
+    }
+
+    public Map<GameState, Double> getProbabilityMemo(){
+        return this.probabilityMemo;
+    }
+
+    /*
+     * Iterate through the nodes and call computeProbability to compute the probabilities on each nodes
+     */
+    public Map<GameState, Double> computeAllProbabilities(){
+        Map<GameState, Double> probabilityMemo = this.getProbabilityMemo();
+
+        for(GameState n : nodes){
+            if(!probabilityMemo.containsKey(n)){
+                n.computeProbability(probabilityMemo, graph, visiting);
+            }
+        }
+
+        return probabilityMemo;
     }
 
     // Finding every path but too long
@@ -138,7 +161,7 @@ public class GameGraph {
         while(!stack.isEmpty()) {
             cnt++;
             GameState currState = stack.pop();
-            for (GameState nextstate : currState.possibleActions()) {
+            for (GameState nextstate : currState.possibleActions(probabilityMemo, visiting)) {
                 if (!visited.contains(nextstate)) {
                     stack.push(nextstate);
                     visited.add(nextstate);
@@ -251,9 +274,9 @@ public class GameGraph {
             return ultDP.get(currState)==1;
         }
         ultDP.put(currState,0);
-        for(GameState nextState:currState.possibleActions()){
+        for(GameState nextState:currState.possibleActions(probabilityMemo, visiting)){
             boolean res = true;
-            for(GameState nextNextState:nextState.possibleActions()){
+            for(GameState nextNextState:nextState.possibleActions(probabilityMemo, visiting)){
                 if(!isUlt(nextNextState)){
                     res = false;
                     break;

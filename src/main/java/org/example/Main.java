@@ -6,7 +6,18 @@ public class Main {
     public static void main(String[] args) {
         GameGraph game = new GameGraph();
         Map<GameState, GameState> shortestPath = game.BFS();
-        game.report();
+        // Computes all of the probabilities for each state
+        Map<GameState, Double> probabilities = game.computeAllProbabilities();
+        /*
+         * Prints out all of the probability results for each State
+         */
+        for (Map.Entry<GameState, Double> entry : probabilities.entrySet()) {
+            GameState state = entry.getKey();  // The state
+            Double prob = entry.getValue();    // The probability
+
+            System.out.println("State: " + state + " -> Probability: " + prob);
+        }
+        //game.report();
 
         int cnt = game.countComponents();
         System.out.println("\nconnected nodes =  " + cnt);
@@ -18,6 +29,7 @@ public class Main {
             int b = scanner.nextInt();
             int c = scanner.nextInt();
             int d = scanner.nextInt();
+            
             GameState state = new GameState(new int[]{a,b}, new int[]{c,d},true);
             // OutOfMemory
             /*
