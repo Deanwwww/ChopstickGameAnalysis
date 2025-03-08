@@ -40,13 +40,14 @@ public class Main {
         System.out.println(" loose: " + loose);
         System.out.println(" win: " + win);
         System.out.println(" 0.5: " + count0_5);
-        System.out.println(" avg: " + avg);
-        System.out.println("high prob win: " + highProbWin);
+        System.out.println(" avg win percentage: " + avg);
+        System.out.println("high prob win states more than 70%: " + highProbWin);
         double winPercentage = (double)win / count;
         System.out.println("Win Percentage: " + winPercentage);
         System.out.println("loose Percentage: " + ((double)loose / count));
         System.out.println("tie Percentage: " + ((double)count0_5 / count));
-        //game.report();
+        System.out.println("total States: " + count);
+        game.report();
 
         int cnt = game.countComponents();
         System.out.println("\nconnected nodes =  " + cnt);
