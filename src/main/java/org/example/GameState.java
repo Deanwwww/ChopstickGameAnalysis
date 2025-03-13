@@ -123,6 +123,10 @@ public class GameState {
         return uniqueActions;
     }
 
+    public boolean getTurn(){
+        return this.myTurn;
+    }
+
     // Overriding for HashSet/HashMap
     @Override
     public boolean equals(Object obj) {

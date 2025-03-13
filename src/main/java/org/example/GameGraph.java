@@ -501,4 +501,84 @@ public class GameGraph {
         ultDP.put(currState, -1);
         return false;
     }
+
+    //Method to print out the best and worst state
+    public Map<GameState, List<GameState>> optimizedSenario(GameState start){
+        Map<GameState, Double> probMemo = this.computeAllProbabilities();
+        Map<GameState, List<GameState>> result = new HashMap<>();
+      
+        return optimizedSenario(probMemo, result, start);
+    }
+
+    private Map<GameState, List<GameState>> optimizedSenario(Map<GameState, Double> probMemo, Map<GameState, List<GameState>> result, GameState start){
+        GameState winState = new GameState(new int[]{-1, -1}, new int[]{-1, -1}, true);
+        GameState loseState = new GameState(new int[]{-1, -1}, new int[]{-1, -1}, false);
+        if(result.containsKey(start)){
+            return result;
+        }
+        if(start.equals(winState) || start.equals(loseState)){
+            return result;
+        }
+
+        // Initiate by putting the starting state or the next starting state into the result
+        result.put(start, new ArrayList<>());
+
+        // Gets the next States
+        List<GameState> nextStates = graph.get(start);
+
+        /*
+         * Gets the first state from one of the next states, and get the current probability of that state
+         * also gets the turn that we are in.
+         */
+        GameState currState = nextStates.get(0);
+        double currentProbability = probMemo.get(currState);
+        boolean myTurn = start.getTurn();
+
+        if(myTurn){
+            double bestProbability = currentProbability;
+            List<Double> probs = new ArrayList<>();
+            probs.add(currentProbability);
+
+            for(int i = 1; i < nextStates.size(); i++){
+                probs.add(probMemo.get(nextStates.get(i)));
+
+                if(probs.get(i) > bestProbability){
+                    bestProbability = probs.get(i);
+                    currState = nextStates.get(i); 
+                }
+            }
+
+            for(int i = 0; i < probs.size(); i++){
+                if(probs.get(i) == bestProbability){
+                    result.get(start).add(nextStates.get(i));
+                }
+            }
+
+        }else if(!myTurn){
+            double worstProbability = currentProbability;
+            List<Double> probs = new ArrayList<>();
+            probs.add(currentProbability);
+
+            for(int i = 1; i < nextStates.size(); i++){
+                probs.add(probMemo.get(nextStates.get(i)));
+
+                if(probs.get(i) < worstProbability){
+                    worstProbability = probs.get(i);
+                    currState = nextStates.get(i); 
+                }
+            }
+
+            for(int i = 0; i < probs.size(); i++){
+                if(probs.get(i) == worstProbability){
+                    result.get(start).add(nextStates.get(i));
+                }
+            }
+        }
+
+        for(int i = 0; i < result.get(start).size(); i++){
+            return optimizedSenario(probMemo, result, result.get(start).get(i));
+        }
+
+        return result;
+    }
 }
