@@ -502,7 +502,15 @@ public class GameGraph {
         return false;
     }
 
-    //Method to print out the best and worst state
+    /*
+     * Behavior: Simulates the most optimized decision each person can make in choosing their game states
+     *              best/optimized decision means:
+     *              -  the greatest probability to win: Your turn (Max)
+     *              -  the lowest probability to win: opponent turn (Min)
+     * 
+     * Parameter: start: GameState
+     * Return: An adjacency list of the game simulation that has been optimized.
+     */
     public Map<GameState, List<GameState>> optimizedSenario(GameState start){
         Map<GameState, Double> probMemo = this.computeAllProbabilities();
         Map<GameState, List<GameState>> result = new HashMap<>();
@@ -510,7 +518,9 @@ public class GameGraph {
         return optimizedSenario(probMemo, result, start);
     }
 
-    private Map<GameState, List<GameState>> optimizedSenario(Map<GameState, Double> probMemo, Map<GameState, List<GameState>> result, GameState start){
+    private Map<GameState, List<GameState>> optimizedSenario(Map<GameState, Double> probMemo, 
+                                                            Map<GameState, List<GameState>> result, 
+                                                            GameState start){
         GameState winState = new GameState(new int[]{-1, -1}, new int[]{-1, -1}, true);
         GameState loseState = new GameState(new int[]{-1, -1}, new int[]{-1, -1}, false);
         if(result.containsKey(start)){
@@ -576,7 +586,7 @@ public class GameGraph {
         }
 
         for(int i = 0; i < result.get(start).size(); i++){
-            return optimizedSenario(probMemo, result, result.get(start).get(i));
+            optimizedSenario(probMemo, result, result.get(start).get(i));
         }
 
         return result;
