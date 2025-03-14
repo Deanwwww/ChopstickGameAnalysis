@@ -1,5 +1,10 @@
 package org.example;
 
+import org.graphstream.graph.Graph;
+import org.graphstream.graph.Node;
+import org.graphstream.graph.implementations.SingleGraph;
+import org.graphstream.ui.view.Viewer;
+
 import java.util.*;
 
 public class Main {
@@ -52,6 +57,55 @@ public class Main {
 
         int cnt = game.countComponents();
         System.out.println("\nconnected nodes =  " + cnt);
+
+        GameState start = new GameState(new int[]{1,1}, new int[]{1,1},true);
+        GameState start2 = new GameState(new int[]{1,1}, new int[]{1,1},false);
+        GameState winst = new GameState(new int[]{-1, -1}, new int[]{-1, -1}, true);
+        Map<GameState, List<GameState>> senario = game.optimizedSenario(start);
+        //Graph Stream
+        System.setProperty("org.graphstream.ui", "swing");
+        Graph gs_graph = new SingleGraph("Directed Graph");
+        gs_graph.setAttribute("ui.stylesheet",
+                "node { fill-color: grey; size: 20px; text-size: 16;}" +
+                        "edge { shape: cubic-curve; arrow-size: 5px, 4px; }");
+        gs_graph.setAttribute("ui.antialias");
+        gs_graph.addNode(start.toString());
+        Node snode = gs_graph.getNode(start.toString());
+        double sprob = game.getProbabilityMemo().get(start);
+        sprob = Math.round(sprob*10000)/100.0;
+
+        snode.setAttribute("ui.label", snode.getId()+"\n " + sprob + "%");
+        snode.setAttribute("ui.style", "fill-color: rgb(6,64,43);");
+        snode.setAttribute("xyz", -1, 0, 0);
+        snode.setAttribute("layout.frozen", true);
+
+        System.out.println("Optimized Senario start");
+        int xpos = 0;
+        while(!start.equals(winst)) {
+            System.out.print(start);
+            double prob = game.getProbabilityMemo().get(start);
+            System.out.println(" "+prob);
+            GameState nextstart = senario.get(start).get(0);
+            prob = Math.round(prob*10000)/100.0;
+            gs_graph.addNode(nextstart.toString());
+            Node node = gs_graph.getNode(nextstart.toString());
+            node.setAttribute("ui.label", node.getId() +"\n"+ " " + prob + "%");
+            if(nextstart.equals(winst)){
+                node.setAttribute("ui.style", "fill-color: blue;");
+            }else if(game.isUlt(start)) {
+                node.setAttribute("ui.style", "fill-color: rgb(255,165,0);");
+            } else if(prob>=70) {
+                node.setAttribute("ui.style", "fill-color: rgb(0,255,0);");
+            }
+            node.setAttribute("xyz", xpos, (xpos%2)*2-2, 0);
+            node.setAttribute("layout.frozen", true);
+            gs_graph.addEdge(start.toString() + " -> " + nextstart.toString(),
+                    start.toString(), nextstart.toString(), true);
+            start = nextstart;
+            xpos++;
+        }
+        Viewer viewer = gs_graph.display();
+        System.out.println("Optimized Senario end");
 
         Scanner scanner = new Scanner(System.in);
         while(true) {
