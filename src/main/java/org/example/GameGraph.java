@@ -514,19 +514,22 @@ public class GameGraph {
     public Map<GameState, List<GameState>> optimizedSenario(GameState start){
         Map<GameState, Double> probMemo = this.computeAllProbabilities();
         Map<GameState, List<GameState>> result = new HashMap<>();
+        GameState winState = new GameState(new int[]{-1, -1}, new int[]{-1, -1}, true);
+        GameState loseState = new GameState(new int[]{-1, -1}, new int[]{-1, -1}, false);
       
-        return optimizedSenario(probMemo, result, start);
+        return optimizedSenario(probMemo, result, start, winState, loseState);
     }
 
     private Map<GameState, List<GameState>> optimizedSenario(Map<GameState, Double> probMemo, 
                                                             Map<GameState, List<GameState>> result, 
-                                                            GameState start){
-        GameState winState = new GameState(new int[]{-1, -1}, new int[]{-1, -1}, true);
-        GameState loseState = new GameState(new int[]{-1, -1}, new int[]{-1, -1}, false);
-        if(result.containsKey(start)){
+                                                            GameState start,
+                                                            GameState winState,
+                                                            GameState loState){
+        
+        if(result.containsKey(start)){// Check if visited State
             return result;
         }
-        if(start.equals(winState) || start.equals(loseState)){
+        if(start.equals(winState) || start.equals(loseState)){ // Check Win/Lose
             return result;
         }
 
@@ -544,11 +547,12 @@ public class GameGraph {
         double currentProbability = probMemo.get(currState);
         boolean myTurn = start.getTurn();
 
-        if(myTurn){
+        if(myTurn){ // Your Turn
             double bestProbability = currentProbability;
             List<Double> probs = new ArrayList<>();
             probs.add(currentProbability);
 
+            //Computes the best probability
             for(int i = 1; i < nextStates.size(); i++){
                 probs.add(probMemo.get(nextStates.get(i)));
 
@@ -558,17 +562,19 @@ public class GameGraph {
                 }
             }
 
+            //Finds all best Probabilities that are the same and add it to result
             for(int i = 0; i < probs.size(); i++){
                 if(probs.get(i) == bestProbability){
                     result.get(start).add(nextStates.get(i));
                 }
             }
 
-        }else if(!myTurn){
+        }else if(!myTurn){ // Opponent Turn
             double worstProbability = currentProbability;
             List<Double> probs = new ArrayList<>();
             probs.add(currentProbability);
 
+            //Computes the worst probability
             for(int i = 1; i < nextStates.size(); i++){
                 probs.add(probMemo.get(nextStates.get(i)));
 
@@ -578,6 +584,7 @@ public class GameGraph {
                 }
             }
 
+            //Finds all worst Probabilities that are the same and add it to result
             for(int i = 0; i < probs.size(); i++){
                 if(probs.get(i) == worstProbability){
                     result.get(start).add(nextStates.get(i));
@@ -585,8 +592,9 @@ public class GameGraph {
             }
         }
 
+        //Finds the next states and compute the optimized decision for each best/worst states
         for(int i = 0; i < result.get(start).size(); i++){
-            optimizedSenario(probMemo, result, result.get(start).get(i));
+            optimizedSenario(probMemo, result, result.get(start).get(i), winState, loState);
         }
 
         return result;
